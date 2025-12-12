@@ -255,7 +255,7 @@
       return `
         <div class="product-card ${stockClass}">
           ${p.featured ? '<span class="featured-badge">⭐ แนะนำ</span>' : ''}
-          <img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+          <img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.src='https://placehold.co/400x300/e8f4fc/0057A0?text=No+Image'">
           <div class="card-content">
             <span class="category-label">${cat.icon} ${cat.name}</span>
             <h3>${p.title}</h3>
@@ -503,7 +503,7 @@
         const cat = cats[p.category] || { name: p.category, icon: '📦' };
         const stockClass = p.stock === 0 ? 'danger' : p.stock <= 10 ? 'warning' : '';
         return `<tr>
-          <td><img src="${p.img}" class="thumb" onerror="this.src='https://via.placeholder.com/60x45?text=No'"></td>
+          <td><img src="${p.img}" class="thumb" onerror="this.src='https://placehold.co/60x45/e8f4fc/0057A0?text=No'"></td>
           <td><strong>${p.title}</strong></td>
           <td>${cat.icon} ${cat.name}</td>
           <td>${UI.formatPrice(p.price)}</td>
@@ -623,7 +623,7 @@
 
     async submitProduct(e) {
       e.preventDefault();
-      let img = this.tempImage || document.getElementById('f-img-url').value.trim() || 'https://via.placeholder.com/400x300?text=No+Image';
+      let img = this.tempImage || document.getElementById('f-img-url').value.trim() || 'https://placehold.co/400x300/e8f4fc/0057A0?text=No+Image';
 
       const data = {
         title: document.getElementById('f-title').value.trim(),
