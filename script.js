@@ -26,14 +26,14 @@
 
   // Default Products
   const DEFAULT_PRODUCTS = [
-    { id: "drill48", title: "สว่านไฟฟ้าไร้สาย 48V", price: 1290, img: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=800&h=600&fit=crop", category: "electric", desc: "สว่านไร้สายพลังสูง เหมาะงานหนัก แบตอึด ทนทาน", stock: 25, featured: true },
-    { id: "airImpact", title: "บล๊อกลมแรงบิดสูง", price: 2590, img: "https://images.unsplash.com/photo-1426927308491-6380b6a9936f?w=800&h=600&fit=crop", category: "auto", desc: "บล๊อกลมสำหรับงานอู่รถ มั่นใจแรงบิดสูง", stock: 12, featured: true },
-    { id: "plier", title: "คีมปากจิ้งจกเหล็กกล้า", price: 190, img: "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=800&h=600&fit=crop", category: "hand", desc: "คีมปากจิ้งจก ออกแบบจับถนัด ทนทาน", stock: 100, featured: false },
-    { id: "wrenchSet", title: "ประแจหกเหลี่ยมชุด 12 ตัว", price: 890, img: "https://images.unsplash.com/photo-1581147036324-c17ac41f3e6b?w=800&h=600&fit=crop", category: "hand", desc: "ชุดประแจครบทุกขนาด", stock: 45, featured: true },
-    { id: "grinder4", title: "ลูกหมู (เครื่องเจียร) 4 นิ้ว", price: 450, img: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=800&h=600&fit=crop", category: "electric", desc: "เครื่องเจียร 4 นิ้ว กำลังดี", stock: 30, featured: false },
-    { id: "jackStand", title: "แม่แรงตั้งพื้น 3 ตัน", price: 1850, img: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&h=600&fit=crop", category: "auto", desc: "แม่แรงตั้งพื้นคุณภาพสูง รับน้ำหนักได้ 3 ตัน", stock: 8, featured: true },
-    { id: "socketSet", title: "ชุดบล็อกเบอร์ 40 ชิ้น", price: 1290, img: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=800&h=600&fit=crop", category: "hand", desc: "ชุดบล็อกครบเซ็ต 40 ชิ้น", stock: 20, featured: false },
-    { id: "heatGun", title: "ปืนเป่าลมร้อน 2000W", price: 890, img: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?w=800&h=600&fit=crop", category: "electric", desc: "ปืนเป่าลมร้อนกำลังสูง", stock: 15, featured: false }
+    {"id":"drill48","title":"สว่านไฟฟ้าไร้สาย 48V","price":1290,"img":"https://images.unsplash.com/photo-1504148455328-c376907d081c?w=800&h=600&fit=crop","category":"electric","desc":"สว่านไร้สายพลังสูง เหมาะงานหนัก แบตอึด ทนทาน","stock":25,"featured":true},
+    {"id":"airImpact","title":"บล๊อกลมแรงบิดสูง","price":2590,"img":"https://images.unsplash.com/photo-1426927308491-6380b6a9936f?w=800&h=600&fit=crop","category":"auto","desc":"บล๊อกลมสำหรับงานอู่รถ มั่นใจแรงบิดสูง","stock":12,"featured":true},
+    {"id":"plier","title":"คีมปากจิ้งจกเหล็กกล้า","price":190,"img":"https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=800&h=600&fit=crop","category":"hand","desc":"คีมปากจิ้งจก ออกแบบจับถนัด ทนทาน","stock":100,"featured":false},
+    {"id":"wrenchSet","title":"ประแจหกเหลี่ยมชุด 12 ตัว","price":890,"img":"https://raw.githubusercontent.com/Arcker89-cyber/Fei-Yi-Shop/main/Photo/images.jfif","category":"hand","desc":"ชุดประแจครบทุกขนาด","stock":45,"featured":true},
+    {"id":"grinder4","title":"ลูกหมู (เครื่องเจียร) 4 นิ้ว","price":450,"img":"https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=800&h=600&fit=crop","category":"electric","desc":"เครื่องเจียร 4 นิ้ว กำลังดี","stock":30,"featured":false},
+    {"id":"jackStand","title":"แม่แรงตั้งพื้น 3 ตัน","price":1850,"img":"https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&h=600&fit=crop","category":"auto","desc":"แม่แรงตั้งพื้นคุณภาพสูง รับน้ำหนักได้ 3 ตัน","stock":8,"featured":true},
+    {"id":"socketSet","title":"ชุดบล็อกเบอร์ 40 ชิ้น","price":1290,"img":"https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=800&h=600&fit=crop","category":"hand","desc":"ชุดบล็อกครบเซ็ต 40 ชิ้น","stock":20,"featured":false},
+    {"id":"heatGun","title":"ปืนเป่าลมร้อน 2000W","price":890,"img":"https://images.unsplash.com/photo-1590959651373-a3db0f38a961?w=800&h=600&fit=crop","category":"electric","desc":"ปืนเป่าลมร้อนกำลังสูง","stock":15,"featured":false}
   ];
 
   // ============================================================
