@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fei Yi Shop — รายละเอียดสินค้า</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo-box">FY</div>
+        <div>
+          <div class="store-name">Fei Yi Shop</div>
+          <div class="store-sub">เครื่องมือดี คู่ช่างไทย</div>
+        </div>
+      </div>
+      <div class="contact-mini">
+        <div>LINE: <strong>@feiyi</strong></div>
+        <div>โทร: <strong>089-123-4567</strong></div>
+      </div>
+      <div class="cart-icon" id="cart-toggle-2" title="ตะกร้าสินค้า">🛒 <span id="cart-count-2" class="badge">0</span></div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">← กลับหน้าหลัก</a>
+      <a href="index.html#all-products">📦 สินค้าทั้งหมด</a>
+      <a href="admin.html">⚙️ จัดการสินค้า</a>
+    </nav>
+  </header>
+
+  <main class="product-details-page">
+    <div id="product-detail" class="product-details"></div>
+  </main>
+
+  <div id="cart-panel-2" class="cart-panel hidden">
+    <div class="cart-header"><h3>🛒 ตะกร้าสินค้า</h3><button id="cart-close-2" class="close-btn">✕</button></div>
+    <div id="cart-items-2" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total">รวมทั้งหมด: <span id="cart-total-2">฿0</span></div>
+      <div class="cart-actions">
+        <button id="checkout-btn-2" class="btn btn-primary">💬 Checkout</button>
+        <button id="clear-cart-2" class="btn btn-ghost">🗑️ ล้าง</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner"><div><h4>Fei Yi Shop</h4><p>LINE: @feiyi • โทร: 089-123-4567</p></div></div>
+    <div class="copyright">© 2025 Fei Yi Shop</div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
