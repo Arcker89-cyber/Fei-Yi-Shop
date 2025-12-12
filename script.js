@@ -11,7 +11,10 @@
     CATEGORIES_STORAGE_KEY: 'feiyi_categories_v4',
     LINE_MSG_URL: 'https://line.me/R/msg/text/',
     CURRENCY: '฿',
-    LOCALE: 'th-TH'
+    LOCALE: 'th-TH',
+    // SVG placeholder ที่ไม่ต้องโหลดจาก server
+    PLACEHOLDER_IMG: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect fill='%23e8f4fc' width='400' height='300'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='20' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E",
+    PLACEHOLDER_THUMB: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='45' viewBox='0 0 60 45'%3E%3Crect fill='%23e8f4fc' width='60' height='45'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='10' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo%3C/text%3E%3C/svg%3E"
   };
 
   // Default Categories
@@ -255,7 +258,7 @@
       return `
         <div class="product-card ${stockClass}">
           ${p.featured ? '<span class="featured-badge">⭐ แนะนำ</span>' : ''}
-          <img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.src='https://placehold.co/400x300/e8f4fc/0057A0?text=No+Image'">
+          <img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%23e8f4fc%27 width=%27400%27 height=%27300%27/%3E%3Ctext fill=%27%230057A0%27 font-family=%27sans-serif%27 font-size=%2720%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27%3ENo Image%3C/text%3E%3C/svg%3E'">
           <div class="card-content">
             <span class="category-label">${cat.icon} ${cat.name}</span>
             <h3>${p.title}</h3>
@@ -503,7 +506,7 @@
         const cat = cats[p.category] || { name: p.category, icon: '📦' };
         const stockClass = p.stock === 0 ? 'danger' : p.stock <= 10 ? 'warning' : '';
         return `<tr>
-          <td><img src="${p.img}" class="thumb" onerror="this.src='https://placehold.co/60x45/e8f4fc/0057A0?text=No'"></td>
+          <td><img src="${p.img}" class="thumb" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2760%27 height=%2745%27%3E%3Crect fill=%27%23e8f4fc%27 width=%2760%27 height=%2745%27/%3E%3Ctext fill=%27%230057A0%27 font-family=%27sans-serif%27 font-size=%278%27 x=%2750%25%27 y=%2750%25%27 text-anchor=%27middle%27%3ENo%3C/text%3E%3C/svg%3E'"></td>
           <td><strong>${p.title}</strong></td>
           <td>${cat.icon} ${cat.name}</td>
           <td>${UI.formatPrice(p.price)}</td>
@@ -623,7 +626,7 @@
 
     async submitProduct(e) {
       e.preventDefault();
-      let img = this.tempImage || document.getElementById('f-img-url').value.trim() || 'https://placehold.co/400x300/e8f4fc/0057A0?text=No+Image';
+      let img = this.tempImage || document.getElementById('f-img-url').value.trim() || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e8f4fc' width='400' height='300'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='20' x='50%25' y='50%25' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
 
       const data = {
         title: document.getElementById('f-title').value.trim(),
