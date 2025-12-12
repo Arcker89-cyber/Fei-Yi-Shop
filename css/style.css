@@ -233,3 +233,11 @@ html, body { min-height: 100%; background: #f0f4f8; color: #1b263b; line-height:
 
 html { scroll-behavior: smooth; }
 ::selection { background: var(--blue); color: white; }
+
+/* Export/Import Modal Styles */
+.export-guide { font-size: 14px; }
+.export-guide code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+.export-guide ol { color: var(--dark); }
+.export-buttons { flex-wrap: wrap; }
+#export-data, #import-data { width: 100%; resize: vertical; font-size: 11px; line-height: 1.4; }
+.modal-content { max-width: 650px; }
