@@ -412,6 +412,8 @@
 
         <div class="admin-actions">
           <button id="btn-add-product" class="btn btn-primary">➕ เพิ่มสินค้าใหม่</button>
+          <button id="btn-export" class="btn btn-ghost">📤 Export ข้อมูล</button>
+          <button id="btn-import" class="btn btn-ghost">📥 Import ข้อมูล</button>
           <button id="btn-reset" class="btn btn-ghost">🔄 รีเซ็ตทั้งหมด</button>
         </div>
 
@@ -468,6 +470,73 @@
               <div class="form-group"><label>ไอคอน (Emoji) *</label><input type="text" id="cf-icon" maxlength="4" required placeholder="⚡"></div>
               <div class="form-actions"><button type="submit" class="btn btn-primary">💾 บันทึก</button><button type="button" class="btn btn-ghost" id="cat-modal-cancel">ยกเลิก</button></div>
             </form>
+          </div>
+        </div>
+
+        <!-- Export Modal -->
+        <div id="export-modal" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header"><h3>📤 Export ข้อมูล</h3><button class="close-btn" id="export-modal-close">✕</button></div>
+            <div style="padding:20px;">
+              <p style="margin-bottom:16px;color:#666;">เลือกข้อมูลที่ต้องการ Export เพื่อนำไปใส่ใน script.js</p>
+              <div class="export-buttons" style="display:flex;gap:12px;margin-bottom:20px;">
+                <button id="btn-export-products" class="btn btn-primary">📦 Export สินค้า</button>
+                <button id="btn-export-categories" class="btn btn-ghost">🏷️ Export หมวดหมู่</button>
+                <button id="btn-export-all" class="btn btn-ghost">📋 Export ทั้งหมด</button>
+              </div>
+              <div class="form-group">
+                <label>JSON Data (คัดลอกไปวางใน script.js)</label>
+                <textarea id="export-data" rows="12" style="font-family:monospace;font-size:12px;" readonly></textarea>
+              </div>
+              <div class="form-actions">
+                <button id="btn-copy-export" class="btn btn-primary">📋 คัดลอก</button>
+                <button id="btn-download-export" class="btn btn-ghost">💾 ดาวน์โหลด JSON</button>
+              </div>
+              <div class="export-guide" style="margin-top:20px;padding:16px;background:#e8f4fc;border-radius:8px;">
+                <h4 style="margin-bottom:8px;">📖 วิธีใช้งาน:</h4>
+                <ol style="margin-left:20px;font-size:14px;line-height:1.8;">
+                  <li>กดปุ่ม Export สินค้า หรือ หมวดหมู่</li>
+                  <li>คัดลอก JSON ด้านบน</li>
+                  <li>เปิดไฟล์ <code>script.js</code> ใน GitHub</li>
+                  <li>หา <code>DEFAULT_PRODUCTS = [...]</code> หรือ <code>DEFAULT_CATEGORIES = {...}</code></li>
+                  <li>แทนที่ข้อมูลเดิมด้วย JSON ใหม่</li>
+                  <li>Commit และ Push</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import Modal -->
+        <div id="import-modal" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header"><h3>📥 Import ข้อมูล</h3><button class="close-btn" id="import-modal-close">✕</button></div>
+            <div style="padding:20px;">
+              <p style="margin-bottom:16px;color:#666;">นำเข้าข้อมูลสินค้าหรือหมวดหมู่จากไฟล์ JSON</p>
+              <div class="form-group">
+                <label>เลือกประเภทข้อมูล</label>
+                <select id="import-type" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;">
+                  <option value="products">📦 สินค้า</option>
+                  <option value="categories">🏷️ หมวดหมู่</option>
+                  <option value="all">📋 ทั้งหมด (สินค้า + หมวดหมู่)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>อัปโหลดไฟล์ JSON</label>
+                <input type="file" id="import-file" accept=".json" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;">
+              </div>
+              <div class="form-group">
+                <label>หรือวาง JSON ที่นี่</label>
+                <textarea id="import-data" rows="8" style="font-family:monospace;font-size:12px;" placeholder='[{"id":"xxx","title":"สินค้า",...}]'></textarea>
+              </div>
+              <div class="form-group checkbox">
+                <label><input type="checkbox" id="import-replace"> แทนที่ข้อมูลเดิมทั้งหมด (ถ้าไม่ติ๊ก จะเพิ่มต่อท้าย)</label>
+              </div>
+              <div class="form-actions">
+                <button id="btn-do-import" class="btn btn-primary">📥 นำเข้าข้อมูล</button>
+                <button id="btn-import-cancel" class="btn btn-ghost">ยกเลิก</button>
+              </div>
+            </div>
           </div>
         </div>
       `;
@@ -583,6 +652,24 @@
         const url = e.target.value.trim();
         if (url) this.showPreview(url);
       });
+
+      // Export modal
+      document.getElementById('btn-export')?.addEventListener('click', () => this.openExportModal());
+      document.getElementById('export-modal-close')?.addEventListener('click', () => this.closeExportModal());
+      document.getElementById('export-modal')?.addEventListener('click', e => { if(e.target.id === 'export-modal') this.closeExportModal(); });
+      document.getElementById('btn-export-products')?.addEventListener('click', () => this.exportProducts());
+      document.getElementById('btn-export-categories')?.addEventListener('click', () => this.exportCategories());
+      document.getElementById('btn-export-all')?.addEventListener('click', () => this.exportAll());
+      document.getElementById('btn-copy-export')?.addEventListener('click', () => this.copyExport());
+      document.getElementById('btn-download-export')?.addEventListener('click', () => this.downloadExport());
+
+      // Import modal
+      document.getElementById('btn-import')?.addEventListener('click', () => this.openImportModal());
+      document.getElementById('import-modal-close')?.addEventListener('click', () => this.closeImportModal());
+      document.getElementById('btn-import-cancel')?.addEventListener('click', () => this.closeImportModal());
+      document.getElementById('import-modal')?.addEventListener('click', e => { if(e.target.id === 'import-modal') this.closeImportModal(); });
+      document.getElementById('import-file')?.addEventListener('change', (e) => this.handleImportFile(e));
+      document.getElementById('btn-do-import')?.addEventListener('click', () => this.doImport());
     },
 
     showPreview(src) {
@@ -714,6 +801,163 @@
         CategoryService.delete(id);
         UI.toast('ลบหมวดหมู่แล้ว');
         this.render('admin-panel');
+      }
+    },
+
+    // ============================================================
+    // EXPORT FUNCTIONS
+    // ============================================================
+    currentExportType: 'products',
+
+    openExportModal() {
+      document.getElementById('export-modal')?.classList.remove('hidden');
+      document.getElementById('export-data').value = '';
+    },
+
+    closeExportModal() {
+      document.getElementById('export-modal')?.classList.add('hidden');
+    },
+
+    exportProducts() {
+      this.currentExportType = 'products';
+      const products = ProductService.getAll();
+      const json = JSON.stringify(products, null, 2);
+      document.getElementById('export-data').value = json;
+      UI.toast('Export สินค้าแล้ว ✓');
+    },
+
+    exportCategories() {
+      this.currentExportType = 'categories';
+      const categories = CategoryService.getAll();
+      const json = JSON.stringify(categories, null, 2);
+      document.getElementById('export-data').value = json;
+      UI.toast('Export หมวดหมู่แล้ว ✓');
+    },
+
+    exportAll() {
+      this.currentExportType = 'all';
+      const data = {
+        products: ProductService.getAll(),
+        categories: CategoryService.getAll()
+      };
+      const json = JSON.stringify(data, null, 2);
+      document.getElementById('export-data').value = json;
+      UI.toast('Export ทั้งหมดแล้ว ✓');
+    },
+
+    copyExport() {
+      const textarea = document.getElementById('export-data');
+      if (!textarea.value) { alert('กรุณา Export ข้อมูลก่อน'); return; }
+      textarea.select();
+      document.execCommand('copy');
+      UI.toast('คัดลอกแล้ว ✓');
+    },
+
+    downloadExport() {
+      const data = document.getElementById('export-data').value;
+      if (!data) { alert('กรุณา Export ข้อมูลก่อน'); return; }
+      
+      const filename = `feiyi_${this.currentExportType}_${new Date().toISOString().slice(0,10)}.json`;
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+      UI.toast('ดาวน์โหลดแล้ว ✓');
+    },
+
+    // ============================================================
+    // IMPORT FUNCTIONS
+    // ============================================================
+    openImportModal() {
+      document.getElementById('import-modal')?.classList.remove('hidden');
+      document.getElementById('import-data').value = '';
+      document.getElementById('import-file').value = '';
+      document.getElementById('import-replace').checked = false;
+    },
+
+    closeImportModal() {
+      document.getElementById('import-modal')?.classList.add('hidden');
+    },
+
+    handleImportFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        document.getElementById('import-data').value = event.target.result;
+        UI.toast('โหลดไฟล์แล้ว ✓');
+      };
+      reader.readAsText(file);
+    },
+
+    doImport() {
+      const jsonStr = document.getElementById('import-data').value.trim();
+      if (!jsonStr) { alert('กรุณาวาง JSON หรืออัปโหลดไฟล์'); return; }
+
+      let data;
+      try {
+        data = JSON.parse(jsonStr);
+      } catch (e) {
+        alert('JSON ไม่ถูกต้อง: ' + e.message);
+        return;
+      }
+
+      const type = document.getElementById('import-type').value;
+      const replace = document.getElementById('import-replace').checked;
+
+      try {
+        if (type === 'products') {
+          if (!Array.isArray(data)) { alert('สินค้าต้องเป็น Array'); return; }
+          if (replace) {
+            ProductService.save(data);
+          } else {
+            const existing = ProductService.getAll();
+            data.forEach(p => {
+              p.id = 'imp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+              existing.push(p);
+            });
+            ProductService.save(existing);
+          }
+          UI.toast(`นำเข้าสินค้า ${data.length} รายการแล้ว ✓`);
+        } 
+        else if (type === 'categories') {
+          if (typeof data !== 'object' || Array.isArray(data)) { alert('หมวดหมู่ต้องเป็น Object'); return; }
+          if (replace) {
+            CategoryService.save(data);
+          } else {
+            const existing = CategoryService.getAll();
+            Object.keys(data).forEach(k => { existing[k] = data[k]; });
+            CategoryService.save(existing);
+          }
+          UI.toast('นำเข้าหมวดหมู่แล้ว ✓');
+        } 
+        else if (type === 'all') {
+          if (!data.products || !data.categories) { alert('ข้อมูลต้องมี products และ categories'); return; }
+          if (replace) {
+            ProductService.save(data.products);
+            CategoryService.save(data.categories);
+          } else {
+            const existingProducts = ProductService.getAll();
+            data.products.forEach(p => {
+              p.id = 'imp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+              existingProducts.push(p);
+            });
+            ProductService.save(existingProducts);
+            
+            const existingCats = CategoryService.getAll();
+            Object.keys(data.categories).forEach(k => { existingCats[k] = data.categories[k]; });
+            CategoryService.save(existingCats);
+          }
+          UI.toast('นำเข้าทั้งหมดแล้ว ✓');
+        }
+
+        this.closeImportModal();
+        this.render('admin-panel');
+      } catch (e) {
+        alert('เกิดข้อผิดพลาด: ' + e.message);
       }
     }
   };
