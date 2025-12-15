@@ -246,10 +246,18 @@
       // Save to Firebase (async)
       FirebaseService.setAllProducts(products);
     },
-    getAll() { return this.load(); },
+    getAll() { 
+      const products = this.load();
+      // เรียงตามชื่อสินค้า
+      return products.sort((a, b) => a.title.localeCompare(b.title, 'th'));
+    },
     getById(id) { return this.load().find(p => p.id === id) || null; },
-    getByCategory(cat) { return this.load().filter(p => p.category === cat); },
-    getFeatured() { return this.load().filter(p => p.featured); },
+    getByCategory(cat) { 
+      return this.load().filter(p => p.category === cat).sort((a, b) => a.title.localeCompare(b.title, 'th'));
+    },
+    getFeatured() { 
+      return this.load().filter(p => p.featured).sort((a, b) => a.title.localeCompare(b.title, 'th'));
+    },
     search(kw) {
       const lk = kw.toLowerCase();
       return this.load().filter(p => p.title.toLowerCase().includes(lk) || p.desc.toLowerCase().includes(lk));
