@@ -241,3 +241,11 @@ html { scroll-behavior: smooth; }
 .export-buttons { flex-wrap: wrap; }
 #export-data, #import-data { width: 100%; resize: vertical; font-size: 11px; line-height: 1.4; }
 .modal-content { max-width: 650px; }
+
+/* Sync Button */
+.btn-success { background: #28a745; color: white; }
+.btn-success:hover { background: #218838; }
+
+/* Sync Info Box */
+.sync-info { line-height: 1.8; }
+.sync-info code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; }
