@@ -12,12 +12,129 @@
     LINE_MSG_URL: 'https://line.me/R/msg/text/',
     CURRENCY: '฿',
     LOCALE: 'th-TH',
-    // GitHub Data URLs - เปลี่ยน URL นี้ให้ตรงกับ repo ของคุณ
-    GITHUB_DATA_URL: 'https://raw.githubusercontent.com/Arcker89-cyber/Fei-Yi-Shop/main/data/products.json',
-    GITHUB_CATEGORIES_URL: 'https://raw.githubusercontent.com/Arcker89-cyber/Fei-Yi-Shop/main/data/categories.json',
-    // SVG placeholder ที่ไม่ต้องโหลดจาก server
+    // Firebase Config
+    FIREBASE: {
+      apiKey: "AIzaSyCT5kSOqkWZPxuxtNWhGHKCqeaIJNPgEws",
+      authDomain: "feiyi-shop.firebaseapp.com",
+      projectId: "feiyi-shop",
+      storageBucket: "feiyi-shop.firebasestorage.app",
+      messagingSenderId: "37475395232",
+      appId: "1:37475395232:web:326ec0d4299c8778f0cbc5"
+    },
+    // SVG placeholder
     PLACEHOLDER_IMG: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect fill='%23e8f4fc' width='400' height='300'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='20' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E",
     PLACEHOLDER_THUMB: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='45' viewBox='0 0 60 45'%3E%3Crect fill='%23e8f4fc' width='60' height='45'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='10' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo%3C/text%3E%3C/svg%3E"
+  };
+
+  // ============================================================
+  // FIREBASE SERVICE
+  // ============================================================
+  let db = null;
+  
+  const FirebaseService = {
+    async init() {
+      if (typeof firebase === 'undefined') {
+        console.error('❌ Firebase SDK not loaded');
+        return false;
+      }
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(CONFIG.FIREBASE);
+        }
+        db = firebase.firestore();
+        console.log('✅ Firebase connected');
+        return true;
+      } catch (e) {
+        console.error('❌ Firebase init error:', e);
+        return false;
+      }
+    },
+
+    // Products
+    async getProducts() {
+      if (!db) return null;
+      try {
+        const snapshot = await db.collection('products').get();
+        const products = [];
+        snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
+        return products;
+      } catch (e) {
+        console.error('Error getting products:', e);
+        return null;
+      }
+    },
+
+    async saveProduct(product) {
+      if (!db) return null;
+      try {
+        if (product.id && !product.id.startsWith('prod_')) {
+          // Update existing
+          await db.collection('products').doc(product.id).set(product);
+        } else {
+          // Add new
+          const docRef = await db.collection('products').add(product);
+          product.id = docRef.id;
+        }
+        return product;
+      } catch (e) {
+        console.error('Error saving product:', e);
+        return null;
+      }
+    },
+
+    async deleteProduct(id) {
+      if (!db) return false;
+      try {
+        await db.collection('products').doc(id).delete();
+        return true;
+      } catch (e) {
+        console.error('Error deleting product:', e);
+        return false;
+      }
+    },
+
+    async setAllProducts(products) {
+      if (!db) return false;
+      try {
+        const batch = db.batch();
+        // Delete all existing
+        const snapshot = await db.collection('products').get();
+        snapshot.forEach(doc => batch.delete(doc.ref));
+        // Add new products
+        products.forEach(p => {
+          const ref = db.collection('products').doc(p.id);
+          batch.set(ref, p);
+        });
+        await batch.commit();
+        return true;
+      } catch (e) {
+        console.error('Error setting products:', e);
+        return false;
+      }
+    },
+
+    // Categories
+    async getCategories() {
+      if (!db) return null;
+      try {
+        const doc = await db.collection('settings').doc('categories').get();
+        return doc.exists ? doc.data() : null;
+      } catch (e) {
+        console.error('Error getting categories:', e);
+        return null;
+      }
+    },
+
+    async saveCategories(categories) {
+      if (!db) return false;
+      try {
+        await db.collection('settings').doc('categories').set(categories);
+        return true;
+      } catch (e) {
+        console.error('Error saving categories:', e);
+        return false;
+      }
+    }
   };
 
   // Default Categories
@@ -40,43 +157,40 @@
   ];
 
   // ============================================================
-  // DATA SYNC SERVICE - โหลดข้อมูลจาก GitHub ทุกครั้ง
+  // DATA SYNC SERVICE - โหลดข้อมูลจาก Firebase
   // ============================================================
   const DataSync = {
-    async fetchProducts() {
-      try {
-        const response = await fetch(CONFIG.GITHUB_DATA_URL + '?t=' + Date.now());
-        if (response.ok) {
-          const products = await response.json();
-          localStorage.setItem(CONFIG.PRODUCTS_STORAGE_KEY, JSON.stringify(products));
-          console.log('✅ Loaded products from GitHub:', products.length, 'items');
-          return products;
-        }
-      } catch (e) {
-        console.log('⚠️ Cannot fetch from GitHub, using local data');
-      }
-      return null;
-    },
-
-    async fetchCategories() {
-      try {
-        const response = await fetch(CONFIG.GITHUB_CATEGORIES_URL + '?t=' + Date.now());
-        if (response.ok) {
-          const categories = await response.json();
-          localStorage.setItem(CONFIG.CATEGORIES_STORAGE_KEY, JSON.stringify(categories));
-          console.log('✅ Loaded categories from GitHub');
-          return categories;
-        }
-      } catch (e) {
-        console.log('⚠️ Cannot fetch categories from GitHub, using local data');
-      }
-      return null;
-    },
-
     async syncAll() {
-      const products = await this.fetchProducts();
-      const categories = await this.fetchCategories();
+      // Try Firebase first
+      const products = await FirebaseService.getProducts();
+      const categories = await FirebaseService.getCategories();
+      
+      if (products && products.length > 0) {
+        localStorage.setItem(CONFIG.PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+        console.log('✅ Synced products from Firebase:', products.length, 'items');
+      }
+      
+      if (categories) {
+        localStorage.setItem(CONFIG.CATEGORIES_STORAGE_KEY, JSON.stringify(categories));
+        console.log('✅ Synced categories from Firebase');
+      }
+      
       return { products, categories };
+    },
+
+    async initializeFirebaseData() {
+      // Check if Firebase has data, if not, upload defaults
+      const products = await FirebaseService.getProducts();
+      if (!products || products.length === 0) {
+        console.log('📤 Uploading default products to Firebase...');
+        await FirebaseService.setAllProducts(DEFAULT_PRODUCTS);
+      }
+      
+      const categories = await FirebaseService.getCategories();
+      if (!categories) {
+        console.log('📤 Uploading default categories to Firebase...');
+        await FirebaseService.saveCategories(DEFAULT_CATEGORIES);
+      }
     }
   };
 
@@ -92,6 +206,8 @@
     },
     save(categories) {
       localStorage.setItem(CONFIG.CATEGORIES_STORAGE_KEY, JSON.stringify(categories));
+      // Save to Firebase (async)
+      FirebaseService.saveCategories(categories);
     },
     getAll() { return this.load(); },
     get(id) { return this.load()[id] || null; },
@@ -127,6 +243,8 @@
     },
     save(products) {
       localStorage.setItem(CONFIG.PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+      // Save to Firebase (async)
+      FirebaseService.setAllProducts(products);
     },
     getAll() { return this.load(); },
     getById(id) { return this.load().find(p => p.id === id) || null; },
@@ -456,18 +574,16 @@
 
         <div class="admin-actions">
           <button id="btn-add-product" class="btn btn-primary">➕ เพิ่มสินค้าใหม่</button>
-          <button id="btn-sync" class="btn btn-success">🔄 Sync จาก GitHub</button>
-          <button id="btn-export" class="btn btn-ghost">📤 Export ข้อมูล</button>
-          <button id="btn-import" class="btn btn-ghost">📥 Import ข้อมูล</button>
+          <button id="btn-sync" class="btn btn-success">🔄 Sync จาก Firebase</button>
+          <button id="btn-export" class="btn btn-ghost">📤 Export</button>
+          <button id="btn-import" class="btn btn-ghost">📥 Import</button>
           <button id="btn-reset" class="btn btn-ghost">⚠️ รีเซ็ต</button>
         </div>
 
-        <div class="sync-info" style="background:#e8f4fc;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;">
-          <strong>📌 วิธีอัปเดตสินค้าให้ทุก Browser เห็น:</strong><br>
-          1. แก้ไขสินค้าในหน้านี้<br>
-          2. กด <strong>📤 Export ข้อมูล</strong> → <strong>📦 Export สินค้า</strong> → <strong>💾 ดาวน์โหลด</strong><br>
-          3. อัปโหลดไฟล์ไปที่ GitHub: <code>data/products.json</code><br>
-          4. ทุก Browser กด <strong>🔄 Sync จาก GitHub</strong> เพื่อโหลดข้อมูลล่าสุด
+        <div class="sync-info" style="background:#d4edda;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;border:1px solid #28a745;">
+          <strong>🔥 Firebase Connected!</strong> ข้อมูลจะอัปเดตอัตโนมัติทุก Browser/User<br>
+          เพิ่ม/แก้ไข/ลบสินค้าได้เลย → ทุกคนจะเห็นข้อมูลเดียวกันทันที!<br>
+          <small style="color:#666;">กด <strong>🔄 Sync</strong> เพื่อโหลดข้อมูลล่าสุดจาก Firebase</small>
         </div>
 
         <div class="admin-table-wrapper">
@@ -1036,8 +1152,17 @@
   async function init() {
     console.log('🛠️ Fei Yi Shop v4 - Init');
     
-    // ลองโหลดข้อมูลจาก GitHub ก่อน
-    await DataSync.syncAll();
+    // Initialize Firebase
+    const firebaseReady = await FirebaseService.init();
+    
+    if (firebaseReady) {
+      // Initialize default data if empty
+      await DataSync.initializeFirebaseData();
+      // Sync data from Firebase
+      await DataSync.syncAll();
+    } else {
+      console.log('⚠️ Firebase not available, using local data');
+    }
     
     if (document.getElementById('featured-grid')) ProductGrid.renderFeatured('featured-grid');
     if (document.getElementById('category-tabs')) CategoryTabs.render('category-tabs', 'all-products-grid');
@@ -1048,7 +1173,7 @@
     console.log('✅ Fei Yi Shop v4 - Ready');
   }
 
-  window.FeiyiApp = { products: ProductService, categories: CategoryService, cart: Cart, sync: DataSync };
+  window.FeiyiApp = { products: ProductService, categories: CategoryService, cart: Cart, sync: DataSync, firebase: FirebaseService };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
