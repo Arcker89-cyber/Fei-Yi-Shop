@@ -604,6 +604,12 @@
             <small style="color:#666;">กด <strong>🔄 Sync</strong> เพื่อโหลดข้อมูลล่าสุดจาก Firebase</small>
           </div>
 
+          <div class="filter-bar" style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+            <label style="font-weight:600;color:var(--dark);">🔍 กรองหมวดหมู่:</label>
+            <div class="category-filter-tabs" id="admin-category-filter"></div>
+            <span id="product-count" style="margin-left:auto;color:var(--muted);font-size:14px;"></span>
+          </div>
+
           <div class="admin-table-wrapper">
             <table class="admin-table"><thead><tr><th>รูป</th><th>ชื่อสินค้า</th><th>หมวดหมู่</th><th>ราคา</th><th>สต๊อก</th><th>แนะนำ</th><th>จัดการ</th></tr></thead>
             <tbody id="product-list"></tbody></table>
@@ -730,6 +736,7 @@
       `;
 
       this.renderCategoryList();
+      this.renderCategoryFilterTabs();
       this.renderProductList();
       this.attachEvents();
     },
@@ -754,11 +761,56 @@
       c.querySelectorAll('[data-del-cat]').forEach(b => b.onclick = () => this.deleteCat(b.dataset.delCat));
     },
 
+    currentCategoryFilter: 'all',
+
+    renderCategoryFilterTabs() {
+      const container = document.getElementById('admin-category-filter');
+      if (!container) return;
+      const cats = CategoryService.getAll();
+      const allProducts = ProductService.load();
+      
+      let html = `<button class="filter-tab ${this.currentCategoryFilter === 'all' ? 'active' : ''}" data-filter="all">📦 ทั้งหมด (${allProducts.length})</button>`;
+      
+      Object.entries(cats).forEach(([id, cat]) => {
+        const count = allProducts.filter(p => p.category === id).length;
+        html += `<button class="filter-tab ${this.currentCategoryFilter === id ? 'active' : ''}" data-filter="${id}">${cat.icon} ${cat.name} (${count})</button>`;
+      });
+      
+      container.innerHTML = html;
+      
+      // Attach events
+      container.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.onclick = () => {
+          this.currentCategoryFilter = btn.dataset.filter;
+          this.renderCategoryFilterTabs();
+          this.renderProductList();
+        };
+      });
+    },
+
     renderProductList() {
       const tbody = document.getElementById('product-list');
       if (!tbody) return;
-      const products = ProductService.getAll();
+      
+      let products = ProductService.getAll();
       const cats = CategoryService.getAll();
+      
+      // Filter by category
+      if (this.currentCategoryFilter !== 'all') {
+        products = products.filter(p => p.category === this.currentCategoryFilter);
+      }
+      
+      // Update count
+      const countEl = document.getElementById('product-count');
+      if (countEl) {
+        countEl.textContent = `แสดง ${products.length} รายการ`;
+      }
+      
+      if (products.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted);">ไม่พบสินค้าในหมวดหมู่นี้</td></tr>`;
+        return;
+      }
+      
       tbody.innerHTML = products.map(p => {
         const cat = cats[p.category] || { name: p.category, icon: '📦' };
         const stockClass = p.stock === 0 ? 'danger' : p.stock <= 10 ? 'warning' : '';
