@@ -149,6 +149,8 @@ html, body { min-height: 100%; background: #f0f4f8; color: #1b263b; line-height:
 .category-item .cat-actions { display: flex; gap: 6px; margin-left: auto; }
 
 .admin-actions { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.admin-actions .btn-ghost { background: white; color: var(--blue); border: 2px solid var(--blue); }
+.admin-actions .btn-ghost:hover { background: var(--blue-light); }
 .admin-table-wrapper { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto; }
 .admin-table { width: 100%; border-collapse: collapse; }
 .admin-table th, .admin-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
