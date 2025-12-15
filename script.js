@@ -721,11 +721,11 @@
 
         <!-- Confirm Delete Modal -->
         <div id="confirm-modal" class="modal hidden">
-          <div class="modal-content small" style="text-align:center;">
+          <div class="modal-content" style="max-width:480px;text-align:center;">
             <div style="padding:30px;">
               <div style="font-size:60px;margin-bottom:16px;">⚠️</div>
-              <h3 style="margin-bottom:12px;color:#dc3545;">ยืนยันการลบข้อมูล</h3>
-              <p style="color:#666;margin-bottom:8px;">คุณต้องการลบข้อมูลสินค้าและหมวดหมู่ทั้งหมดหรือไม่?</p>
+              <h3 style="margin-bottom:16px;color:#dc3545;">ยืนยันการลบข้อมูล</h3>
+              <p style="color:#333;margin-bottom:12px;font-size:16px;">คุณต้องการลบข้อมูลสินค้าและหมวดหมู่ทั้งหมดหรือไม่?</p>
               <p style="color:#999;font-size:14px;margin-bottom:24px;">ข้อมูลจะถูกรีเซ็ตกลับเป็นค่าเริ่มต้น<br>การกระทำนี้ไม่สามารถยกเลิกได้!</p>
               <div style="display:flex;gap:12px;justify-content:center;">
                 <button id="btn-confirm-delete" class="btn" style="background:#dc3545;color:white;">🗑️ ลบข้อมูลทั้งหมด</button>
