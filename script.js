@@ -587,22 +587,23 @@
           <button id="btn-add-cat" class="btn btn-ghost" style="margin-top:12px;">➕ เพิ่มหมวดหมู่ใหม่</button>
         </div>
 
-        <div class="admin-actions">
-          <button id="btn-add-product" class="btn btn-primary">➕ เพิ่มสินค้าใหม่</button>
-          <button id="btn-sync" class="btn btn-success">🔄 Sync จาก Firebase</button>
-          <button id="btn-export" class="btn btn-ghost">📤 Export</button>
-          <button id="btn-import" class="btn btn-ghost">📥 Import</button>
-          <button id="btn-reset" class="btn btn-ghost">⚠️ รีเซ็ต</button>
-        </div>
-
-        <div class="sync-info" style="background:#d4edda;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;border:1px solid #28a745;">
-          <strong>🔥 Firebase Connected!</strong> ข้อมูลจะอัปเดตอัตโนมัติทุก Browser/User<br>
-          เพิ่ม/แก้ไข/ลบสินค้าได้เลย → ทุกคนจะเห็นข้อมูลเดียวกันทันที!<br>
-          <small style="color:#666;">กด <strong>🔄 Sync</strong> เพื่อโหลดข้อมูลล่าสุดจาก Firebase</small>
-        </div>
-
         <div class="admin-section">
           <h3>📦 รายการสินค้า</h3>
+          
+          <div class="admin-actions">
+            <button id="btn-add-product" class="btn btn-primary">➕ เพิ่มสินค้าใหม่</button>
+            <button id="btn-sync" class="btn btn-success">🔄 Sync จาก Firebase</button>
+            <button id="btn-export" class="btn btn-ghost">📤 Export</button>
+            <button id="btn-import" class="btn btn-ghost">📥 Import</button>
+            <button id="btn-reset" class="btn btn-ghost">⚠️ รีเซ็ต</button>
+          </div>
+
+          <div class="sync-info" style="background:#d4edda;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;border:1px solid #28a745;">
+            <strong>🔥 Firebase Connected!</strong> ข้อมูลจะอัปเดตอัตโนมัติทุก Browser/User<br>
+            เพิ่ม/แก้ไข/ลบสินค้าได้เลย → ทุกคนจะเห็นข้อมูลเดียวกันทันที!<br>
+            <small style="color:#666;">กด <strong>🔄 Sync</strong> เพื่อโหลดข้อมูลล่าสุดจาก Firebase</small>
+          </div>
+
           <div class="admin-table-wrapper">
             <table class="admin-table"><thead><tr><th>รูป</th><th>ชื่อสินค้า</th><th>หมวดหมู่</th><th>ราคา</th><th>สต๊อก</th><th>แนะนำ</th><th>จัดการ</th></tr></thead>
             <tbody id="product-list"></tbody></table>
