@@ -12,6 +12,9 @@
     LINE_MSG_URL: 'https://line.me/R/msg/text/',
     CURRENCY: '฿',
     LOCALE: 'th-TH',
+    // GitHub Data URLs - เปลี่ยน URL นี้ให้ตรงกับ repo ของคุณ
+    GITHUB_DATA_URL: 'https://raw.githubusercontent.com/Arcker89-cyber/Fei-Yi-Shop/main/data/products.json',
+    GITHUB_CATEGORIES_URL: 'https://raw.githubusercontent.com/Arcker89-cyber/Fei-Yi-Shop/main/data/categories.json',
     // SVG placeholder ที่ไม่ต้องโหลดจาก server
     PLACEHOLDER_IMG: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect fill='%23e8f4fc' width='400' height='300'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='20' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E",
     PLACEHOLDER_THUMB: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='45' viewBox='0 0 60 45'%3E%3Crect fill='%23e8f4fc' width='60' height='45'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='10' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo%3C/text%3E%3C/svg%3E"
@@ -35,6 +38,47 @@
     {"id":"socketSet","title":"ชุดบล็อกเบอร์ 40 ชิ้น","price":1290,"img":"https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=800&h=600&fit=crop","category":"hand","desc":"ชุดบล็อกครบเซ็ต 40 ชิ้น","stock":20,"featured":false},
     {"id":"heatGun","title":"ปืนเป่าลมร้อน 2000W","price":890,"img":"https://images.unsplash.com/photo-1590959651373-a3db0f38a961?w=800&h=600&fit=crop","category":"electric","desc":"ปืนเป่าลมร้อนกำลังสูง","stock":15,"featured":false}
   ];
+
+  // ============================================================
+  // DATA SYNC SERVICE - โหลดข้อมูลจาก GitHub ทุกครั้ง
+  // ============================================================
+  const DataSync = {
+    async fetchProducts() {
+      try {
+        const response = await fetch(CONFIG.GITHUB_DATA_URL + '?t=' + Date.now());
+        if (response.ok) {
+          const products = await response.json();
+          localStorage.setItem(CONFIG.PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+          console.log('✅ Loaded products from GitHub:', products.length, 'items');
+          return products;
+        }
+      } catch (e) {
+        console.log('⚠️ Cannot fetch from GitHub, using local data');
+      }
+      return null;
+    },
+
+    async fetchCategories() {
+      try {
+        const response = await fetch(CONFIG.GITHUB_CATEGORIES_URL + '?t=' + Date.now());
+        if (response.ok) {
+          const categories = await response.json();
+          localStorage.setItem(CONFIG.CATEGORIES_STORAGE_KEY, JSON.stringify(categories));
+          console.log('✅ Loaded categories from GitHub');
+          return categories;
+        }
+      } catch (e) {
+        console.log('⚠️ Cannot fetch categories from GitHub, using local data');
+      }
+      return null;
+    },
+
+    async syncAll() {
+      const products = await this.fetchProducts();
+      const categories = await this.fetchCategories();
+      return { products, categories };
+    }
+  };
 
   // ============================================================
   // CATEGORY SERVICE
@@ -412,9 +456,18 @@
 
         <div class="admin-actions">
           <button id="btn-add-product" class="btn btn-primary">➕ เพิ่มสินค้าใหม่</button>
+          <button id="btn-sync" class="btn btn-success">🔄 Sync จาก GitHub</button>
           <button id="btn-export" class="btn btn-ghost">📤 Export ข้อมูล</button>
           <button id="btn-import" class="btn btn-ghost">📥 Import ข้อมูล</button>
-          <button id="btn-reset" class="btn btn-ghost">🔄 รีเซ็ตทั้งหมด</button>
+          <button id="btn-reset" class="btn btn-ghost">⚠️ รีเซ็ต</button>
+        </div>
+
+        <div class="sync-info" style="background:#e8f4fc;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;">
+          <strong>📌 วิธีอัปเดตสินค้าให้ทุก Browser เห็น:</strong><br>
+          1. แก้ไขสินค้าในหน้านี้<br>
+          2. กด <strong>📤 Export ข้อมูล</strong> → <strong>📦 Export สินค้า</strong> → <strong>💾 ดาวน์โหลด</strong><br>
+          3. อัปโหลดไฟล์ไปที่ GitHub: <code>data/products.json</code><br>
+          4. ทุก Browser กด <strong>🔄 Sync จาก GitHub</strong> เพื่อโหลดข้อมูลล่าสุด
         </div>
 
         <div class="admin-table-wrapper">
@@ -614,6 +667,21 @@
       document.getElementById('cat-modal-cancel')?.addEventListener('click', () => this.closeCatModal());
       document.getElementById('cat-modal')?.addEventListener('click', e => { if(e.target.id === 'cat-modal') this.closeCatModal(); });
       document.getElementById('cat-form')?.addEventListener('submit', e => this.submitCat(e));
+
+      // Sync from GitHub
+      document.getElementById('btn-sync')?.addEventListener('click', async () => {
+        UI.toast('กำลัง Sync จาก GitHub...');
+        const result = await DataSync.syncAll();
+        if (result.products || result.categories) {
+          UI.toast('✅ Sync สำเร็จ!');
+          this.render('admin-panel');
+          // Refresh other grids if exist
+          if (document.getElementById('featured-grid')) ProductGrid.renderFeatured('featured-grid');
+          if (document.getElementById('all-products-grid')) ProductGrid.render('all-products-grid');
+        } else {
+          UI.toast('⚠️ ไม่สามารถ Sync ได้ (ตรวจสอบไฟล์บน GitHub)');
+        }
+      });
 
       // Reset
       document.getElementById('btn-reset')?.addEventListener('click', () => {
@@ -965,8 +1033,12 @@
   // ============================================================
   // INIT
   // ============================================================
-  function init() {
+  async function init() {
     console.log('🛠️ Fei Yi Shop v4 - Init');
+    
+    // ลองโหลดข้อมูลจาก GitHub ก่อน
+    await DataSync.syncAll();
+    
     if (document.getElementById('featured-grid')) ProductGrid.renderFeatured('featured-grid');
     if (document.getElementById('category-tabs')) CategoryTabs.render('category-tabs', 'all-products-grid');
     if (document.getElementById('all-products-grid')) ProductGrid.render('all-products-grid');
@@ -976,7 +1048,7 @@
     console.log('✅ Fei Yi Shop v4 - Ready');
   }
 
-  window.FeiyiApp = { products: ProductService, categories: CategoryService, cart: Cart };
+  window.FeiyiApp = { products: ProductService, categories: CategoryService, cart: Cart, sync: DataSync };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
