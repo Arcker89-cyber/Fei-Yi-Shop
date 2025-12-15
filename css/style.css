@@ -152,6 +152,7 @@ html, body { min-height: 100%; background: #f0f4f8; color: #1b263b; line-height:
 .admin-actions .btn-ghost { background: white; color: var(--blue); border: 2px solid var(--blue); }
 .admin-actions .btn-ghost:hover { background: var(--blue-light); }
 .admin-table-wrapper { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto; }
+.admin-section .admin-table-wrapper { box-shadow: none; }
 .admin-table { width: 100%; border-collapse: collapse; }
 .admin-table th, .admin-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; }
 .admin-table th { background: var(--light); font-weight: 600; }
