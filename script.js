@@ -595,7 +595,7 @@
             <button id="btn-sync" class="btn btn-success">🔄 Sync จาก Firebase</button>
             <button id="btn-export" class="btn btn-ghost">📤 Export</button>
             <button id="btn-import" class="btn btn-ghost">📥 Import</button>
-            <button id="btn-reset" class="btn btn-ghost">⚠️ รีเซ็ต</button>
+            <button id="btn-reset" class="btn btn-ghost">🗑️ ลบข้อมูลทั้งหมด</button>
           </div>
 
           <div class="sync-info" style="background:#d4edda;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;border:1px solid #28a745;">
@@ -672,29 +672,22 @@
           <div class="modal-content">
             <div class="modal-header"><h3>📤 Export ข้อมูล</h3><button class="close-btn" id="export-modal-close">✕</button></div>
             <div style="padding:20px;">
-              <p style="margin-bottom:16px;color:#666;">เลือกข้อมูลที่ต้องการ Export เพื่อนำไปใส่ใน script.js</p>
-              <div class="export-buttons" style="display:flex;gap:12px;margin-bottom:20px;">
-                <button id="btn-export-products" class="btn btn-primary">📦 Export สินค้า</button>
-                <button id="btn-export-categories" class="btn btn-ghost">🏷️ Export หมวดหมู่</button>
-                <button id="btn-export-all" class="btn btn-ghost">📋 Export ทั้งหมด</button>
-              </div>
+              <p style="margin-bottom:16px;color:#666;">ส่งออกข้อมูลสินค้าเป็นไฟล์ CSV (เปิดด้วย Excel ได้)</p>
               <div class="form-group">
-                <label>JSON Data (คัดลอกไปวางใน script.js)</label>
-                <textarea id="export-data" rows="12" style="font-family:monospace;font-size:12px;" readonly></textarea>
+                <label>ตัวอย่างข้อมูล CSV</label>
+                <textarea id="export-data" rows="10" style="font-family:monospace;font-size:12px;" readonly></textarea>
               </div>
               <div class="form-actions">
-                <button id="btn-copy-export" class="btn btn-primary">📋 คัดลอก</button>
-                <button id="btn-download-export" class="btn btn-ghost">💾 ดาวน์โหลด JSON</button>
+                <button id="btn-export-products" class="btn btn-primary">📦 ดาวน์โหลด CSV สินค้า</button>
+                <button id="btn-export-categories" class="btn btn-ghost">🏷️ ดาวน์โหลด JSON หมวดหมู่</button>
               </div>
               <div class="export-guide" style="margin-top:20px;padding:16px;background:#e8f4fc;border-radius:8px;">
                 <h4 style="margin-bottom:8px;">📖 วิธีใช้งาน:</h4>
                 <ol style="margin-left:20px;font-size:14px;line-height:1.8;">
-                  <li>กดปุ่ม Export สินค้า หรือ หมวดหมู่</li>
-                  <li>คัดลอก JSON ด้านบน</li>
-                  <li>เปิดไฟล์ <code>script.js</code> ใน GitHub</li>
-                  <li>หา <code>DEFAULT_PRODUCTS = [...]</code> หรือ <code>DEFAULT_CATEGORIES = {...}</code></li>
-                  <li>แทนที่ข้อมูลเดิมด้วย JSON ใหม่</li>
-                  <li>Commit และ Push</li>
+                  <li>กดปุ่ม <strong>ดาวน์โหลด CSV สินค้า</strong></li>
+                  <li>เปิดไฟล์ด้วย <strong>Excel</strong> หรือ <strong>Google Sheets</strong></li>
+                  <li>แก้ไขข้อมูลตามต้องการ</li>
+                  <li>บันทึกเป็น CSV แล้วกลับมา Import</li>
                 </ol>
               </div>
             </div>
@@ -706,22 +699,14 @@
           <div class="modal-content">
             <div class="modal-header"><h3>📥 Import ข้อมูล</h3><button class="close-btn" id="import-modal-close">✕</button></div>
             <div style="padding:20px;">
-              <p style="margin-bottom:16px;color:#666;">นำเข้าข้อมูลสินค้าหรือหมวดหมู่จากไฟล์ JSON</p>
+              <p style="margin-bottom:16px;color:#666;">นำเข้าข้อมูลสินค้าจากไฟล์ CSV (จาก Excel)</p>
               <div class="form-group">
-                <label>เลือกประเภทข้อมูล</label>
-                <select id="import-type" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;">
-                  <option value="products">📦 สินค้า</option>
-                  <option value="categories">🏷️ หมวดหมู่</option>
-                  <option value="all">📋 ทั้งหมด (สินค้า + หมวดหมู่)</option>
-                </select>
+                <label>อัปโหลดไฟล์ CSV</label>
+                <input type="file" id="import-file" accept=".csv,.json" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;">
               </div>
               <div class="form-group">
-                <label>อัปโหลดไฟล์ JSON</label>
-                <input type="file" id="import-file" accept=".json" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;">
-              </div>
-              <div class="form-group">
-                <label>หรือวาง JSON ที่นี่</label>
-                <textarea id="import-data" rows="8" style="font-family:monospace;font-size:12px;" placeholder='[{"id":"xxx","title":"สินค้า",...}]'></textarea>
+                <label>ตัวอย่างข้อมูลที่จะนำเข้า</label>
+                <textarea id="import-data" rows="8" style="font-family:monospace;font-size:12px;" placeholder="อัปโหลดไฟล์ CSV แล้วจะแสดงตัวอย่างที่นี่..." readonly></textarea>
               </div>
               <div class="form-group checkbox">
                 <label><input type="checkbox" id="import-replace"> แทนที่ข้อมูลเดิมทั้งหมด (ถ้าไม่ติ๊ก จะเพิ่มต่อท้าย)</label>
@@ -869,12 +854,12 @@
         }
       });
 
-      // Reset
+      // Reset / ลบข้อมูลทั้งหมด
       document.getElementById('btn-reset')?.addEventListener('click', () => {
-        if (confirm('รีเซ็ตสินค้าและหมวดหมู่ทั้งหมดเป็นค่าเริ่มต้น?')) {
+        if (confirm('⚠️ คุณต้องการลบข้อมูลสินค้าและหมวดหมู่ทั้งหมดหรือไม่?\n\nข้อมูลจะถูกรีเซ็ตกลับเป็นค่าเริ่มต้น\nการกระทำนี้ไม่สามารถยกเลิกได้!')) {
           ProductService.reset();
           CategoryService.reset();
-          UI.toast('รีเซ็ตข้อมูลแล้ว');
+          UI.toast('ลบข้อมูลทั้งหมดแล้ว');
           this.render('admin-panel');
         }
       });
@@ -913,9 +898,6 @@
       document.getElementById('export-modal')?.addEventListener('click', e => { if(e.target.id === 'export-modal') this.closeExportModal(); });
       document.getElementById('btn-export-products')?.addEventListener('click', () => this.exportProducts());
       document.getElementById('btn-export-categories')?.addEventListener('click', () => this.exportCategories());
-      document.getElementById('btn-export-all')?.addEventListener('click', () => this.exportAll());
-      document.getElementById('btn-copy-export')?.addEventListener('click', () => this.copyExport());
-      document.getElementById('btn-download-export')?.addEventListener('click', () => this.downloadExport());
 
       // Import modal
       document.getElementById('btn-import')?.addEventListener('click', () => this.openImportModal());
@@ -1065,7 +1047,12 @@
 
     openExportModal() {
       document.getElementById('export-modal')?.classList.remove('hidden');
-      document.getElementById('export-data').value = '';
+      // แสดงตัวอย่าง CSV
+      const products = ProductService.getAll();
+      const preview = products.slice(0, 3).map(p => 
+        `${p.title}, ฿${p.price}, ${p.stock} ชิ้น`
+      ).join('\n');
+      document.getElementById('export-data').value = `ตัวอย่างข้อมูล (${products.length} รายการ):\n\n${preview}\n\n...และอื่นๆ`;
     },
 
     closeExportModal() {
@@ -1073,98 +1060,200 @@
     },
 
     exportProducts() {
-      this.currentExportType = 'products';
       const products = ProductService.getAll();
-      const json = JSON.stringify(products, null, 2);
-      document.getElementById('export-data').value = json;
-      UI.toast('Export สินค้าแล้ว ✓');
-    },
-
-    exportCategories() {
-      this.currentExportType = 'categories';
-      const categories = CategoryService.getAll();
-      const json = JSON.stringify(categories, null, 2);
-      document.getElementById('export-data').value = json;
-      UI.toast('Export หมวดหมู่แล้ว ✓');
-    },
-
-    exportAll() {
-      this.currentExportType = 'all';
-      const data = {
-        products: ProductService.getAll(),
-        categories: CategoryService.getAll()
-      };
-      const json = JSON.stringify(data, null, 2);
-      document.getElementById('export-data').value = json;
-      UI.toast('Export ทั้งหมดแล้ว ✓');
-    },
-
-    copyExport() {
-      const textarea = document.getElementById('export-data');
-      if (!textarea.value) { alert('กรุณา Export ข้อมูลก่อน'); return; }
-      textarea.select();
-      document.execCommand('copy');
-      UI.toast('คัดลอกแล้ว ✓');
-    },
-
-    downloadExport() {
-      const data = document.getElementById('export-data').value;
-      if (!data) { alert('กรุณา Export ข้อมูลก่อน'); return; }
       
-      const filename = `feiyi_${this.currentExportType}_${new Date().toISOString().slice(0,10)}.json`;
-      const blob = new Blob([data], { type: 'application/json' });
+      // CSV Header
+      const headers = ['id', 'title', 'price', 'category', 'stock', 'featured', 'desc', 'img'];
+      
+      // CSV Rows
+      const rows = products.map(p => {
+        return [
+          p.id || '',
+          `"${(p.title || '').replace(/"/g, '""')}"`,
+          p.price || 0,
+          p.category || '',
+          p.stock || 0,
+          p.featured ? 'TRUE' : 'FALSE',
+          `"${(p.desc || '').replace(/"/g, '""')}"`,
+          `"${(p.img || '').replace(/"/g, '""')}"`
+        ].join(',');
+      });
+      
+      const csv = [headers.join(','), ...rows].join('\n');
+      
+      // Add BOM for Excel UTF-8 support
+      const bom = '\uFEFF';
+      const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = filename;
+      a.download = `feiyi_products_${new Date().toISOString().slice(0,10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      UI.toast('ดาวน์โหลดแล้ว ✓');
+      
+      UI.toast('ดาวน์โหลด CSV แล้ว ✓');
+      this.closeExportModal();
+    },
+
+    exportCategories() {
+      const categories = CategoryService.getAll();
+      const json = JSON.stringify(categories, null, 2);
+      
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `feiyi_categories_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      UI.toast('ดาวน์โหลด JSON หมวดหมู่แล้ว ✓');
+      this.closeExportModal();
     },
 
     // ============================================================
     // IMPORT FUNCTIONS
     // ============================================================
+    importedData: null,
+    importFileType: null,
+
     openImportModal() {
       document.getElementById('import-modal')?.classList.remove('hidden');
       document.getElementById('import-data').value = '';
       document.getElementById('import-file').value = '';
       document.getElementById('import-replace').checked = false;
+      this.importedData = null;
+      this.importFileType = null;
     },
 
     closeImportModal() {
       document.getElementById('import-modal')?.classList.add('hidden');
     },
 
+    parseCSV(csvText) {
+      const lines = csvText.split('\n').filter(line => line.trim());
+      if (lines.length < 2) return [];
+      
+      // Parse header
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      
+      const products = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = this.parseCSVLine(lines[i]);
+        if (values.length < headers.length) continue;
+        
+        const product = {};
+        headers.forEach((header, idx) => {
+          let value = values[idx] || '';
+          
+          // Remove quotes
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1).replace(/""/g, '"');
+          }
+          
+          // Convert types
+          if (header === 'price' || header === 'stock') {
+            product[header] = parseInt(value) || 0;
+          } else if (header === 'featured') {
+            product[header] = value.toUpperCase() === 'TRUE' || value === '1';
+          } else {
+            product[header] = value;
+          }
+        });
+        
+        // Generate ID if missing
+        if (!product.id) {
+          product.id = 'imp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        }
+        
+        products.push(product);
+      }
+      
+      return products;
+    },
+
+    parseCSVLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim());
+      
+      return result;
+    },
+
     handleImportFile(e) {
       const file = e.target.files[0];
       if (!file) return;
+      
+      const isCSV = file.name.toLowerCase().endsWith('.csv');
+      const isJSON = file.name.toLowerCase().endsWith('.json');
+      
       const reader = new FileReader();
       reader.onload = (event) => {
-        document.getElementById('import-data').value = event.target.result;
+        const content = event.target.result;
+        
+        if (isCSV) {
+          this.importFileType = 'csv';
+          const products = this.parseCSV(content);
+          this.importedData = products;
+          
+          // Show preview
+          const preview = products.slice(0, 5).map(p => 
+            `• ${p.title} - ฿${p.price} (${p.stock} ชิ้น)`
+          ).join('\n');
+          document.getElementById('import-data').value = `พบ ${products.length} รายการ:\n\n${preview}${products.length > 5 ? '\n...และอื่นๆ' : ''}`;
+          
+        } else if (isJSON) {
+          this.importFileType = 'json';
+          try {
+            this.importedData = JSON.parse(content);
+            document.getElementById('import-data').value = `พบข้อมูล JSON (หมวดหมู่)\n\n${content.substring(0, 500)}...`;
+          } catch (err) {
+            alert('ไฟล์ JSON ไม่ถูกต้อง');
+            return;
+          }
+        }
+        
         UI.toast('โหลดไฟล์แล้ว ✓');
       };
       reader.readAsText(file);
     },
 
     doImport() {
-      const jsonStr = document.getElementById('import-data').value.trim();
-      if (!jsonStr) { alert('กรุณาวาง JSON หรืออัปโหลดไฟล์'); return; }
-
-      let data;
-      try {
-        data = JSON.parse(jsonStr);
-      } catch (e) {
-        alert('JSON ไม่ถูกต้อง: ' + e.message);
-        return;
+      if (!this.importedData) { 
+        alert('กรุณาอัปโหลดไฟล์ CSV หรือ JSON ก่อน'); 
+        return; 
       }
 
-      const type = document.getElementById('import-type').value;
       const replace = document.getElementById('import-replace').checked;
 
       try {
-        if (type === 'products') {
-          if (!Array.isArray(data)) { alert('สินค้าต้องเป็น Array'); return; }
+        if (this.importFileType === 'csv') {
+          // Import products from CSV
+          const data = this.importedData;
+          if (!Array.isArray(data) || data.length === 0) { 
+            alert('ไม่พบข้อมูลสินค้าในไฟล์'); 
+            return; 
+          }
+          
           if (replace) {
             ProductService.save(data);
           } else {
@@ -1176,9 +1265,15 @@
             ProductService.save(existing);
           }
           UI.toast(`นำเข้าสินค้า ${data.length} รายการแล้ว ✓`);
-        } 
-        else if (type === 'categories') {
-          if (typeof data !== 'object' || Array.isArray(data)) { alert('หมวดหมู่ต้องเป็น Object'); return; }
+          
+        } else if (this.importFileType === 'json') {
+          // Import categories from JSON
+          const data = this.importedData;
+          if (typeof data !== 'object' || Array.isArray(data)) { 
+            alert('หมวดหมู่ต้องเป็น Object'); 
+            return; 
+          }
+          
           if (replace) {
             CategoryService.save(data);
           } else {
@@ -1187,25 +1282,6 @@
             CategoryService.save(existing);
           }
           UI.toast('นำเข้าหมวดหมู่แล้ว ✓');
-        } 
-        else if (type === 'all') {
-          if (!data.products || !data.categories) { alert('ข้อมูลต้องมี products และ categories'); return; }
-          if (replace) {
-            ProductService.save(data.products);
-            CategoryService.save(data.categories);
-          } else {
-            const existingProducts = ProductService.getAll();
-            data.products.forEach(p => {
-              p.id = 'imp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-              existingProducts.push(p);
-            });
-            ProductService.save(existingProducts);
-            
-            const existingCats = CategoryService.getAll();
-            Object.keys(data.categories).forEach(k => { existingCats[k] = data.categories[k]; });
-            CategoryService.save(existingCats);
-          }
-          UI.toast('นำเข้าทั้งหมดแล้ว ✓');
         }
 
         this.closeImportModal();
