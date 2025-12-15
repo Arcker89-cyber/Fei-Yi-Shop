@@ -601,9 +601,12 @@
           <small style="color:#666;">กด <strong>🔄 Sync</strong> เพื่อโหลดข้อมูลล่าสุดจาก Firebase</small>
         </div>
 
-        <div class="admin-table-wrapper">
-          <table class="admin-table"><thead><tr><th>รูป</th><th>ชื่อสินค้า</th><th>หมวดหมู่</th><th>ราคา</th><th>สต๊อก</th><th>แนะนำ</th><th>จัดการ</th></tr></thead>
-          <tbody id="product-list"></tbody></table>
+        <div class="admin-section">
+          <h3>📦 รายการสินค้า</h3>
+          <div class="admin-table-wrapper">
+            <table class="admin-table"><thead><tr><th>รูป</th><th>ชื่อสินค้า</th><th>หมวดหมู่</th><th>ราคา</th><th>สต๊อก</th><th>แนะนำ</th><th>จัดการ</th></tr></thead>
+            <tbody id="product-list"></tbody></table>
+          </div>
         </div>
 
         <!-- Product Modal -->
