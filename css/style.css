@@ -151,6 +151,13 @@ html, body { min-height: 100%; background: #f0f4f8; color: #1b263b; line-height:
 .admin-actions { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
 .admin-actions .btn-ghost { background: white; color: var(--blue); border: 2px solid var(--blue); }
 .admin-actions .btn-ghost:hover { background: var(--blue-light); }
+
+/* Category Filter Tabs */
+.category-filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-tab { padding: 8px 16px; border: 2px solid var(--blue); background: white; color: var(--blue); border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+.filter-tab:hover { background: var(--blue-light); }
+.filter-tab.active { background: var(--blue); color: white; }
+
 .admin-table-wrapper { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto; }
 .admin-section .admin-table-wrapper { box-shadow: none; }
 .admin-table { width: 100%; border-collapse: collapse; }
