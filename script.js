@@ -606,7 +606,7 @@
 
           <div class="filter-bar" style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
             <label style="font-weight:600;color:var(--dark);">🔍 กรองหมวดหมู่:</label>
-            <div class="category-filter-tabs" id="admin-category-filter"></div>
+            <select id="admin-category-filter" class="filter-dropdown"></select>
             <span id="product-count" style="margin-left:auto;color:var(--muted);font-size:14px;"></span>
           </div>
 
@@ -764,28 +764,27 @@
     currentCategoryFilter: 'all',
 
     renderCategoryFilterTabs() {
-      const container = document.getElementById('admin-category-filter');
-      if (!container) return;
+      const select = document.getElementById('admin-category-filter');
+      if (!select) return;
       const cats = CategoryService.getAll();
       const allProducts = ProductService.load();
       
-      let html = `<button class="filter-tab ${this.currentCategoryFilter === 'all' ? 'active' : ''}" data-filter="all">📦 ทั้งหมด (${allProducts.length})</button>`;
+      let html = `<option value="all">📦 ทั้งหมด (${allProducts.length})</option>`;
       
       Object.entries(cats).forEach(([id, cat]) => {
         const count = allProducts.filter(p => p.category === id).length;
-        html += `<button class="filter-tab ${this.currentCategoryFilter === id ? 'active' : ''}" data-filter="${id}">${cat.icon} ${cat.name} (${count})</button>`;
+        const selected = this.currentCategoryFilter === id ? 'selected' : '';
+        html += `<option value="${id}" ${selected}>${cat.icon} ${cat.name} (${count})</option>`;
       });
       
-      container.innerHTML = html;
+      select.innerHTML = html;
+      select.value = this.currentCategoryFilter;
       
-      // Attach events
-      container.querySelectorAll('.filter-tab').forEach(btn => {
-        btn.onclick = () => {
-          this.currentCategoryFilter = btn.dataset.filter;
-          this.renderCategoryFilterTabs();
-          this.renderProductList();
-        };
-      });
+      // Attach event
+      select.onchange = () => {
+        this.currentCategoryFilter = select.value;
+        this.renderProductList();
+      };
     },
 
     renderProductList() {
