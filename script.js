@@ -209,7 +209,14 @@
       // Save to Firebase (async)
       FirebaseService.saveCategories(categories);
     },
-    getAll() { return this.load(); },
+    getAll() { 
+      const cats = this.load();
+      // เรียงตามชื่อหมวดหมู่ (ก-ฮ)
+      const sortedEntries = Object.entries(cats).sort((a, b) => 
+        a[1].name.localeCompare(b[1].name, 'th')
+      );
+      return Object.fromEntries(sortedEntries);
+    },
     get(id) { return this.load()[id] || null; },
     add(id, name, icon) {
       const cats = this.load();
