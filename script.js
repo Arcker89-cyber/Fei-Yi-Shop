@@ -718,6 +718,22 @@
             </div>
           </div>
         </div>
+
+        <!-- Confirm Delete Modal -->
+        <div id="confirm-modal" class="modal hidden">
+          <div class="modal-content small" style="text-align:center;">
+            <div style="padding:30px;">
+              <div style="font-size:60px;margin-bottom:16px;">⚠️</div>
+              <h3 style="margin-bottom:12px;color:#dc3545;">ยืนยันการลบข้อมูล</h3>
+              <p style="color:#666;margin-bottom:8px;">คุณต้องการลบข้อมูลสินค้าและหมวดหมู่ทั้งหมดหรือไม่?</p>
+              <p style="color:#999;font-size:14px;margin-bottom:24px;">ข้อมูลจะถูกรีเซ็ตกลับเป็นค่าเริ่มต้น<br>การกระทำนี้ไม่สามารถยกเลิกได้!</p>
+              <div style="display:flex;gap:12px;justify-content:center;">
+                <button id="btn-confirm-delete" class="btn" style="background:#dc3545;color:white;">🗑️ ลบข้อมูลทั้งหมด</button>
+                <button id="btn-confirm-cancel" class="btn btn-ghost" style="color:#666;border-color:#ddd;">ยกเลิก</button>
+              </div>
+            </div>
+          </div>
+        </div>
       `;
 
       this.renderCategoryList();
@@ -854,13 +870,27 @@
         }
       });
 
-      // Reset / ลบข้อมูลทั้งหมด
+      // Reset / ลบข้อมูลทั้งหมด - เปิด Modal
       document.getElementById('btn-reset')?.addEventListener('click', () => {
-        if (confirm('⚠️ คุณต้องการลบข้อมูลสินค้าและหมวดหมู่ทั้งหมดหรือไม่?\n\nข้อมูลจะถูกรีเซ็ตกลับเป็นค่าเริ่มต้น\nการกระทำนี้ไม่สามารถยกเลิกได้!')) {
-          ProductService.reset();
-          CategoryService.reset();
-          UI.toast('ลบข้อมูลทั้งหมดแล้ว');
-          this.render('admin-panel');
+        document.getElementById('confirm-modal')?.classList.remove('hidden');
+      });
+
+      // Confirm Modal events
+      document.getElementById('btn-confirm-delete')?.addEventListener('click', () => {
+        ProductService.reset();
+        CategoryService.reset();
+        document.getElementById('confirm-modal')?.classList.add('hidden');
+        UI.toast('ลบข้อมูลทั้งหมดแล้ว');
+        this.render('admin-panel');
+      });
+
+      document.getElementById('btn-confirm-cancel')?.addEventListener('click', () => {
+        document.getElementById('confirm-modal')?.classList.add('hidden');
+      });
+
+      document.getElementById('confirm-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'confirm-modal') {
+          document.getElementById('confirm-modal')?.classList.add('hidden');
         }
       });
 
