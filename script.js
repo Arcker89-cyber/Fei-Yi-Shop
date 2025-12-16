@@ -482,6 +482,8 @@
   // PRODUCT DETAIL
   // ============================================================
   const ProductDetail = {
+    currentImageIndex: 0,
+    
     render(containerId) {
       const c = document.getElementById(containerId);
       if (!c) return;
@@ -491,10 +493,30 @@
       const cats = CategoryService.getAll();
       const cat = cats[p.category] || { name: p.category, icon: '📦' };
       const stockClass = p.stock === 0 ? 'out-of-stock' : p.stock <= 10 ? 'low-stock' : '';
+      
+      // รองรับทั้ง images array และ img เดี่ยว
+      const images = p.images && p.images.length > 0 ? p.images : [p.img];
+      this.currentImageIndex = 0;
+      
       c.innerHTML = `
-        <div class="detail-image">
-          <img src="${p.img}" alt="${p.title}">
-          ${p.featured ? '<span class="featured-badge large">⭐ แนะนำ</span>' : ''}
+        <div class="detail-image-section">
+          <div class="main-image-container">
+            <img id="main-product-image" src="${images[0]}" alt="${p.title}" class="main-image zoomable">
+            <button class="zoom-btn" id="btn-zoom">🔍 ขยาย</button>
+            ${p.featured ? '<span class="featured-badge large">⭐ แนะนำ</span>' : ''}
+            ${images.length > 1 ? `
+              <button class="gallery-nav prev" id="gallery-prev">❮</button>
+              <button class="gallery-nav next" id="gallery-next">❯</button>
+            ` : ''}
+          </div>
+          ${images.length > 1 ? `
+            <div class="thumbnail-gallery" id="thumbnail-gallery">
+              ${images.map((img, i) => `
+                <img src="${img}" class="thumbnail ${i === 0 ? 'active' : ''}" data-index="${i}" alt="รูปที่ ${i+1}">
+              `).join('')}
+            </div>
+          ` : ''}
+          <p class="image-hint">📷 คลิกที่รูปเพื่อขยายดูรายละเอียด</p>
         </div>
         <div class="detail-info">
           <span class="category-tag">${cat.icon} ${cat.name}</span>
@@ -506,7 +528,82 @@
             <button id="d-add" class="buy-btn large" ${p.stock===0?'disabled':''}>🛒 เพิ่มลงตะกร้า</button>
             <button id="d-line" class="line-btn large">💬 สั่งผ่าน LINE</button>
           </div>
-        </div>`;
+        </div>
+        
+        <!-- Lightbox Modal -->
+        <div id="lightbox" class="lightbox hidden">
+          <div class="lightbox-content">
+            <button class="lightbox-close" id="lightbox-close">✕</button>
+            <img id="lightbox-image" src="" alt="Zoom">
+            ${images.length > 1 ? `
+              <button class="lightbox-nav prev" id="lightbox-prev">❮</button>
+              <button class="lightbox-nav next" id="lightbox-next">❯</button>
+              <div class="lightbox-counter"><span id="lightbox-counter">1</span> / ${images.length}</div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+      
+      // Events
+      const mainImg = document.getElementById('main-product-image');
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-image');
+      
+      // Zoom/Lightbox
+      const openLightbox = () => {
+        lightboxImg.src = images[this.currentImageIndex];
+        lightbox.classList.remove('hidden');
+        document.getElementById('lightbox-counter')?.textContent = this.currentImageIndex + 1;
+      };
+      
+      mainImg?.addEventListener('click', openLightbox);
+      document.getElementById('btn-zoom')?.addEventListener('click', openLightbox);
+      document.getElementById('lightbox-close')?.addEventListener('click', () => lightbox.classList.add('hidden'));
+      lightbox?.addEventListener('click', (e) => { if(e.target === lightbox) lightbox.classList.add('hidden'); });
+      
+      // Gallery Navigation
+      const updateMainImage = (index) => {
+        this.currentImageIndex = index;
+        mainImg.src = images[index];
+        document.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === index));
+        if (lightboxImg) lightboxImg.src = images[index];
+        document.getElementById('lightbox-counter')?.textContent = index + 1;
+      };
+      
+      document.querySelectorAll('.thumbnail').forEach(t => {
+        t.addEventListener('click', () => updateMainImage(parseInt(t.dataset.index)));
+      });
+      
+      document.getElementById('gallery-prev')?.addEventListener('click', () => {
+        const newIndex = this.currentImageIndex > 0 ? this.currentImageIndex - 1 : images.length - 1;
+        updateMainImage(newIndex);
+      });
+      
+      document.getElementById('gallery-next')?.addEventListener('click', () => {
+        const newIndex = this.currentImageIndex < images.length - 1 ? this.currentImageIndex + 1 : 0;
+        updateMainImage(newIndex);
+      });
+      
+      document.getElementById('lightbox-prev')?.addEventListener('click', () => {
+        const newIndex = this.currentImageIndex > 0 ? this.currentImageIndex - 1 : images.length - 1;
+        updateMainImage(newIndex);
+      });
+      
+      document.getElementById('lightbox-next')?.addEventListener('click', () => {
+        const newIndex = this.currentImageIndex < images.length - 1 ? this.currentImageIndex + 1 : 0;
+        updateMainImage(newIndex);
+      });
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('hidden')) {
+          if (e.key === 'Escape') lightbox.classList.add('hidden');
+          if (e.key === 'ArrowLeft') document.getElementById('lightbox-prev')?.click();
+          if (e.key === 'ArrowRight') document.getElementById('lightbox-next')?.click();
+        }
+      });
+      
+      // Add to cart / LINE
       document.getElementById('d-add')?.addEventListener('click', () => { Cart.add(p.id); UI.toast('เพิ่มลงตะกร้าแล้ว ✓'); CartBadge.update(); });
       document.getElementById('d-line')?.addEventListener('click', () => { const u = lineUrl(p.id); if(u) window.open(u,'_blank'); });
     }
@@ -628,22 +725,25 @@
               </div>
               <div class="form-group"><label>หมวดหมู่ *</label><select id="f-category" required></select></div>
               
-              <!-- Image Upload Section -->
+              <!-- Image Upload Section - Multiple Images -->
               <div class="form-group">
-                <label>รูปภาพ</label>
+                <label>รูปภาพสินค้า (สูงสุด 5 รูป)</label>
                 <div class="image-upload-box">
                   <div class="upload-tabs">
                     <button type="button" class="upload-tab active" data-tab="upload">📁 อัปโหลดไฟล์</button>
                     <button type="button" class="upload-tab" data-tab="url">🔗 ใส่ลิงก์</button>
                   </div>
                   <div class="upload-content" id="tab-upload">
-                    <input type="file" id="f-img-file" accept="image/*">
-                    <p class="upload-hint">รองรับ JPG, PNG, GIF (ขนาดไม่เกิน 2MB)</p>
+                    <input type="file" id="f-img-file" accept="image/*" multiple>
+                    <p class="upload-hint">รองรับ JPG, PNG, GIF (เลือกได้หลายไฟล์ กด Ctrl+คลิก)</p>
                   </div>
                   <div class="upload-content hidden" id="tab-url">
                     <input type="url" id="f-img-url" placeholder="https://example.com/image.jpg">
+                    <button type="button" id="btn-add-url" class="btn btn-ghost" style="margin-top:8px;padding:8px 16px;">➕ เพิ่มลิงก์</button>
                   </div>
-                  <div class="image-preview" id="img-preview"></div>
+                  <div class="image-gallery-preview" id="img-gallery-preview">
+                    <!-- รูปหลายรูปจะแสดงที่นี่ -->
+                  </div>
                 </div>
               </div>
 
@@ -904,22 +1004,35 @@
         };
       });
 
-      // File input preview
+      // Multiple File input
       document.getElementById('f-img-file')?.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          if (file.size > 2 * 1024 * 1024) { alert('ไฟล์ใหญ่เกิน 2MB'); return; }
+        const files = Array.from(e.target.files);
+        for (const file of files) {
+          if (this.tempImages.length >= 5) {
+            alert('สูงสุด 5 รูป');
+            break;
+          }
+          if (file.size > 2 * 1024 * 1024) { 
+            alert(`ไฟล์ ${file.name} ใหญ่เกิน 2MB`); 
+            continue; 
+          }
           const base64 = await ImageHandler.toBase64(file);
           const resized = await ImageHandler.resize(base64);
-          this.showPreview(resized);
-          this.tempImage = resized;
+          this.tempImages.push(resized);
         }
+        this.renderGalleryPreview();
       });
 
-      // URL input preview
-      document.getElementById('f-img-url')?.addEventListener('blur', (e) => {
-        const url = e.target.value.trim();
-        if (url) this.showPreview(url);
+      // URL input - Add button
+      document.getElementById('btn-add-url')?.addEventListener('click', () => {
+        const url = document.getElementById('f-img-url').value.trim();
+        if (url && this.tempImages.length < 5) {
+          this.tempImages.push(url);
+          this.renderGalleryPreview();
+          document.getElementById('f-img-url').value = '';
+        } else if (this.tempImages.length >= 5) {
+          alert('สูงสุด 5 รูป');
+        }
       });
 
       // Export modal
@@ -938,20 +1051,46 @@
       document.getElementById('btn-do-import')?.addEventListener('click', () => this.doImport());
     },
 
-    showPreview(src) {
-      const preview = document.getElementById('img-preview');
-      if (preview) preview.innerHTML = src ? `<img src="${src}" alt="Preview"><button type="button" class="remove-preview" onclick="this.parentElement.innerHTML='';document.getElementById('f-img-file').value='';document.getElementById('f-img-url').value='';">✕</button>` : '';
+    renderGalleryPreview() {
+      const container = document.getElementById('img-gallery-preview');
+      if (!container) return;
+      
+      if (this.tempImages.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      container.innerHTML = `
+        <div class="gallery-preview-grid">
+          ${this.tempImages.map((img, i) => `
+            <div class="gallery-preview-item ${i === 0 ? 'main' : ''}">
+              <img src="${img}" alt="รูปที่ ${i+1}">
+              <button type="button" class="remove-img-btn" data-idx="${i}">✕</button>
+              ${i === 0 ? '<span class="main-badge">รูปหลัก</span>' : ''}
+            </div>
+          `).join('')}
+        </div>
+        <p class="gallery-hint">🖼️ รูปแรกจะเป็นรูปหลัก (${this.tempImages.length}/5)</p>
+      `;
+      
+      // Remove button events
+      container.querySelectorAll('.remove-img-btn').forEach(btn => {
+        btn.onclick = () => {
+          this.tempImages.splice(parseInt(btn.dataset.idx), 1);
+          this.renderGalleryPreview();
+        };
+      });
     },
 
-    tempImage: null,
+    tempImages: [],
 
     openProductModal(id = null) {
       this.editId = id;
-      this.tempImage = null;
+      this.tempImages = [];
       const form = document.getElementById('product-form');
       form?.reset();
       this.updateCategorySelect();
-      document.getElementById('img-preview').innerHTML = '';
+      document.getElementById('img-gallery-preview').innerHTML = '';
       document.getElementById('modal-title').textContent = id ? '✏️ แก้ไขสินค้า' : '➕ เพิ่มสินค้าใหม่';
 
       if (id) {
@@ -961,11 +1100,16 @@
           document.getElementById('f-price').value = p.price;
           document.getElementById('f-stock').value = p.stock;
           document.getElementById('f-category').value = p.category;
-          document.getElementById('f-img-url').value = p.img.startsWith('data:') ? '' : p.img;
           document.getElementById('f-desc').value = p.desc || '';
           document.getElementById('f-featured').checked = p.featured;
-          this.showPreview(p.img);
-          if (p.img.startsWith('data:')) this.tempImage = p.img;
+          
+          // โหลดรูปภาพทั้งหมด
+          if (p.images && p.images.length > 0) {
+            this.tempImages = [...p.images];
+          } else if (p.img) {
+            this.tempImages = [p.img];
+          }
+          this.renderGalleryPreview();
         }
       }
       document.getElementById('product-modal')?.classList.remove('hidden');
@@ -974,12 +1118,17 @@
     closeProductModal() {
       document.getElementById('product-modal')?.classList.add('hidden');
       this.editId = null;
-      this.tempImage = null;
+      this.tempImages = [];
     },
 
     async submitProduct(e) {
       e.preventDefault();
-      let img = this.tempImage || document.getElementById('f-img-url').value.trim() || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e8f4fc' width='400' height='300'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='20' x='50%25' y='50%25' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
+      
+      // ถ้าไม่มีรูป ใช้ placeholder
+      const defaultImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e8f4fc' width='400' height='300'/%3E%3Ctext fill='%230057A0' font-family='sans-serif' font-size='20' x='50%25' y='50%25' text-anchor='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
+      
+      const images = this.tempImages.length > 0 ? this.tempImages : [defaultImg];
+      const img = images[0]; // รูปหลัก
 
       const data = {
         title: document.getElementById('f-title').value.trim(),
@@ -987,6 +1136,7 @@
         stock: parseInt(document.getElementById('f-stock').value) || 0,
         category: document.getElementById('f-category').value,
         img,
+        images, // เก็บทุกรูป
         desc: document.getElementById('f-desc').value.trim(),
         featured: document.getElementById('f-featured').checked
       };
@@ -1092,11 +1242,13 @@
     exportProducts() {
       const products = ProductService.getAll();
       
-      // CSV Header
-      const headers = ['id', 'title', 'price', 'category', 'stock', 'featured', 'desc', 'img'];
+      // CSV Header - เพิ่ม images column
+      const headers = ['id', 'title', 'price', 'category', 'stock', 'featured', 'desc', 'img', 'images'];
       
       // CSV Rows
       const rows = products.map(p => {
+        // รวม images array เป็น string คั่นด้วย |
+        const imagesStr = (p.images && p.images.length > 0) ? p.images.join('|') : (p.img || '');
         return [
           p.id || '',
           `"${(p.title || '').replace(/"/g, '""')}"`,
@@ -1105,7 +1257,8 @@
           p.stock || 0,
           p.featured ? 'TRUE' : 'FALSE',
           `"${(p.desc || '').replace(/"/g, '""')}"`,
-          `"${(p.img || '').replace(/"/g, '""')}"`
+          `"${(p.img || '').replace(/"/g, '""')}"`,
+          `"${imagesStr.replace(/"/g, '""')}"`
         ].join(',');
       });
       
@@ -1186,6 +1339,9 @@
             product[header] = parseInt(value) || 0;
           } else if (header === 'featured') {
             product[header] = value.toUpperCase() === 'TRUE' || value === '1';
+          } else if (header === 'images') {
+            // แยก images string เป็น array (คั่นด้วย |)
+            product[header] = value ? value.split('|').filter(img => img.trim()) : [];
           } else {
             product[header] = value;
           }
@@ -1194,6 +1350,11 @@
         // Generate ID if missing
         if (!product.id) {
           product.id = 'imp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        }
+        
+        // ถ้าไม่มี images แต่มี img ให้สร้าง images array
+        if ((!product.images || product.images.length === 0) && product.img) {
+          product.images = [product.img];
         }
         
         products.push(product);
