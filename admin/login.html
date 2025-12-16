@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>เข้าสู่ระบบ - Fei Yi Shop Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="login-page">
+
+  <div id="login-container">
+    <!-- Login form will be rendered by admin.js -->
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>กำลังโหลด...</p>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <!-- App Scripts -->
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

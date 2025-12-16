@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fei Yi Shop — เครื่องมือดี คู่ช่างไทย</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo-box">FY</div>
+        <div>
+          <div class="store-name">Fei Yi Shop</div>
+          <div class="store-sub">เครื่องมือดี คู่ช่างไทย</div>
+        </div>
+      </div>
+      <div class="contact-mini">
+        <div class="line">LINE: <strong>@feiyi</strong></div>
+        <div class="phone">โทร: <strong>089-123-4567</strong></div>
+      </div>
+      <div class="header-right">
+        <a href="../admin/login.html" class="admin-login-btn">🔐 เข้าสู่ระบบจัดการคลังสินค้า</a>
+        <div class="cart-icon" id="cart-toggle" title="ตะกร้าสินค้า">
+          🛒 <span id="cart-count" class="badge">0</span>
+        </div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html" class="active">🏠 หน้าแรก</a>
+      <a href="#all-products">📦 สินค้าทั้งหมด</a>
+      <a href="#contact">📞 ติดต่อ</a>
+    </nav>
+  </header>
+
+  <!-- HERO BANNER -->
+  <section class="hero">
+    <img class="hero-img" src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1600" alt="Workshop Tools">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Fei Yi Shop — เครื่องมือดี คู่ช่างไทย</h1>
+      <p>อุปกรณ์ช่างคุณภาพสูงสำหรับงานหนักและงานซ่อมทั่วไป — ส่งทั่วไทย</p>
+      <div class="hero-cta">
+        <a href="#all-products" class="btn btn-primary">🛒 ดูสินค้าเดี๋ยวนี้</a>
+        <a href="#contact" class="btn btn-ghost">📞 ติดต่อเรา</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <main>
+    <section class="product-section">
+      <h2>⭐ สินค้าแนะนำ</h2>
+      <div class="product-grid" id="featured-grid">
+        <div class="loading-placeholder">กำลังโหลดสินค้า...</div>
+      </div>
+    </section>
+
+    <!-- ALL PRODUCTS WITH CATEGORY TABS -->
+    <section id="all-products" class="product-section">
+      <h2>📦 สินค้าทั้งหมด</h2>
+      <div class="category-tabs" id="category-tabs"></div>
+      <div class="product-grid" id="all-products-grid">
+        <div class="loading-placeholder">กำลังโหลดสินค้า...</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- CART PANEL -->
+  <div id="cart-panel" class="cart-panel hidden">
+    <div class="cart-header">
+      <h3>🛒 ตะกร้าสินค้า</h3>
+      <button id="cart-close" class="close-btn">✕</button>
+    </div>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total">รวม: <span id="cart-total">฿0</span></div>
+      <div class="cart-actions">
+        <button id="checkout-btn" class="btn btn-primary">💬 สั่งซื้อผ่าน LINE</button>
+        <button id="clear-cart" class="btn btn-ghost">🗑️ ล้างตะกร้า</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="contact" class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h4>Fei Yi Shop</h4>
+        <p>เครื่องมือดี คู่ช่างไทย</p>
+        <p>LINE: @feiyi • โทร: 089-123-4567</p>
+      </div>
+      <div>
+        <h4>ช่องทางสั่งซื้อ</h4>
+        <p>• หยิบสินค้าใส่ตะกร้า แล้วกด "สั่งซื้อผ่าน LINE"</p>
+        <p>• หรือกดปุ่ม LINE ในหน้ารายละเอียดสินค้า</p>
+      </div>
+    </div>
+    <div class="copyright">© 2025 Fei Yi Shop — All rights reserved</div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <!-- App Scripts -->
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="shop.js"></script>
+</body>
+</html>
