@@ -548,12 +548,13 @@
       const mainImg = document.getElementById('main-product-image');
       const lightbox = document.getElementById('lightbox');
       const lightboxImg = document.getElementById('lightbox-image');
+      const lightboxCounter = document.getElementById('lightbox-counter');
       
       // Zoom/Lightbox
       const openLightbox = () => {
         lightboxImg.src = images[this.currentImageIndex];
         lightbox.classList.remove('hidden');
-        document.getElementById('lightbox-counter')?.textContent = this.currentImageIndex + 1;
+        if (lightboxCounter) lightboxCounter.textContent = this.currentImageIndex + 1;
       };
       
       mainImg?.addEventListener('click', openLightbox);
@@ -567,7 +568,7 @@
         mainImg.src = images[index];
         document.querySelectorAll('.thumbnail').forEach((t, i) => t.classList.toggle('active', i === index));
         if (lightboxImg) lightboxImg.src = images[index];
-        document.getElementById('lightbox-counter')?.textContent = index + 1;
+        if (lightboxCounter) lightboxCounter.textContent = index + 1;
       };
       
       document.querySelectorAll('.thumbnail').forEach(t => {
